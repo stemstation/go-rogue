@@ -1,0 +1,11 @@
+{
+    "tileset": "graphic",
+    "viewPortCols": 80,
+    "viewPortRows": 50,
+    "roomsMax": 100,
+    "roomsMin": 3,
+    "roomsWidthMin": 5,
+    "roomsWidthMax": 15,
+    "roomsHeightMin": 5,
+    "roomsHeightMax": 15
+}

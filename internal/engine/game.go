@@ -7,39 +7,54 @@ import (
 
 // Game represents the game state. It holds a reference to the player and a
 // slice for the [Entity] structs. The player is included in this slice
-// as the first element.
+// as the first element. It also has a map to convert a SpriteName to a
+// SpriteID, a pointer to the [GameMap] struct, and the [Input] handler.
 type Game struct {
-	player   *Entity
-	entities []*Entity
-	gameMap  *GameMap
-	input    Input
+	player            *Entity
+	entities          []*Entity
+	namesToIDs        map[string]int
+	gameMap           *GameMap
+	roomConfiguration RoomConfiguration
+	input             Input
 }
 
 // NewGame creates and initializes a new [Game] struct. We currently only have
 // one [GameMap] and so the size of the map is passed in for the game to
 // initialize it. This will certainly change at some point, because we
-// want to support multiple maps eventually.
+// want to support multiple maps eventually. We also pass in a pointer to the
+// [Entity] for the player and a slice of pointers to [Entity] for the NPCs.
+// It has the handler for [Input], a [RoomConfiguration], and a map to
+// convert sprite names to sprite IDs.
+// After the [gameMap] is created, place the player in the center of room 0 and
+// the monster in the center of the last room.
 func NewGame(
 	mapWidth, mapHeight int,
 	player *Entity,
 	npcs []*Entity,
 	input Input,
+	roomsConfig RoomConfiguration,
+	namesToIDs map[string]int,
 ) (*Game, error) {
 
 	game := &Game{
-		player:   player,
-		entities: append([]*Entity{player}, npcs...),
-		gameMap:  NewGameMap(mapWidth, mapHeight),
-		input:    input,
+		player:            player,
+		entities:          append([]*Entity{player}, npcs...),
+		namesToIDs:        namesToIDs,
+		gameMap:           NewGameMap(mapWidth, mapHeight, roomsConfig),
+		roomConfiguration: roomsConfig,
+		input:             input,
 	}
+	player.Loc = game.gameMap.rooms[0].Center()
+	game.entities[1].Loc = game.gameMap.rooms[len(game.gameMap.rooms)-1].Center()
+
 	return game, nil
 }
 
-// Update is called 60 times per second for the game state to update.
-// Currently, it gets an [Action] from the [Entity] struct's
-// [Behavior.GetAction] method and attempts to [Action.Perform] it.
-// [ImpossibleActionError] indicates the action was not allowed,
-// for example, the player can't walk through the wall.
+// Update is called for the game state to update. Currently, it gets an
+// [Action] from the [Entity] struct's [Behavior.GetAction] method
+// and attempts to [Action.Perform] it. [ImpossibleActionError] indicates
+// the action was not allowed, for example, the player can't walk through
+// a wall.
 func (g *Game) Update() error {
 	action := g.player.Behavior.GetAction(g, g.player)
 	if action == nil {

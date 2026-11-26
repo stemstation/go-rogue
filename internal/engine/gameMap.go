@@ -1,52 +1,38 @@
 package engine
 
-import (
-	"image/color"
-)
-
-// Graphic is the visual representation of a tile. Name refers to the sprite
-// name for accessing the sprite from the SpriteSheet. FG and BG are the
-// foreground and background colors.
-type Graphic struct {
-	Name string
-	FG   color.NRGBA
-	BG   color.NRGBA
-}
-
-// Tile is the representation used by the [GameMap]. A Tile can be walkable,
-// transparent, and has a graphical representation. Currently we only have a
-// DarkGraphic, because that is where we are at in the tutorial. Eventually we
-// will have a LitGraphic or something similar.
+// Tile is the representation of a grid location used by the [GameMap].
+// A Tile can be walkable, transparent, and stores a string and an integer
+// for identification of the correct sprite.
 type Tile struct {
 	Walkable    bool
 	Transparent bool
-	DarkGraphic *Graphic
+	SpriteName  string
+	SpriteID    int
 }
 
-// GameMap is a cols*rows slice of [Tile] structs.  They are stored in one
-// dimension internally to ensure that the tiles are contiguous in memory.
+// GameMap is a cols*rows slice of pointers to [Tile] structs.  They are stored
+// in one dimension internally to ensure that the tiles are contiguous in
+// memory. It also holds a slice of [RectangularRoom] structs, defining the
+// rooms that were created during the procedural map generation.
 type GameMap struct {
 	cols, rows int
 	tiles      []*Tile
+	rooms      []RectangularRoom
 }
 
-// NewGameMap generates a map for us. It is currently a "dummy" map that fills
-// the map with "floor" tiles and then sets a few tiles to be a wall. This is
-// just to test that we can't walk outside of the map or through a wall.
-func NewGameMap(cols, rows int) *GameMap {
+// NewGameMap generates a map for us. It starts by filling the [GameMap] with
+// "bedrock" tiles. It then calls [GenerateDungeon] to carve out a dungeon from
+// the bedrock.
+func NewGameMap(cols, rows int, roomsConfig RoomConfiguration) *GameMap {
 	gm := &GameMap{cols: cols, rows: rows}
 	gm.tiles = make([]*Tile, cols*rows)
-
-	for y := 0; y < gm.rows; y++ {
-		for x := 0; x < gm.cols; x++ {
-			gm.tiles[gm.GetIndex(Point{x, y})] = floor
+	for y := range rows {
+		for x := range cols {
+			gm.tiles[gm.GetIndex(Point{X: x, Y: y})] = bedrock
 		}
 	}
-
-	gm.tiles[gm.GetIndex(Point{X: 30, Y: 22})] = wall
-	gm.tiles[gm.GetIndex(Point{X: 31, Y: 22})] = wall
-	gm.tiles[gm.GetIndex(Point{X: 32, Y: 22})] = wall
-
+	gm.rooms = make([]RectangularRoom, 0, roomsConfig.RoomsMax)
+	gm.GenerateDungeon(roomsConfig)
 	return gm
 }
 
@@ -56,7 +42,7 @@ func (gm *GameMap) GetIndex(p Point) int {
 	return p.Y*gm.cols + p.X
 }
 
-// InBounds tests if a [Point] is inside of the [GameMap].
+// InBounds tests if a [Point] is inside of the [GameMap] dimensions.
 func (gm *GameMap) InBounds(p Point) bool {
 	return 0 <= p.X && p.X < gm.cols && 0 <= p.Y && p.Y < gm.rows
 }
@@ -66,6 +52,38 @@ func (gm *GameMap) InBounds(p Point) bool {
 // can operate directly on a [Point].
 func (gm *GameMap) IsWalkable(p Point) bool {
 	return gm.tiles[gm.GetIndex(p)].Walkable
+}
+
+// IsTransparent tests if the [Tile] at [Point] is transparent. It is a helper
+// so that [GetIndex] doesn't have to be called in other places and we
+// can operate directly on a [Point].
+func (gm *GameMap) IsTransparent(p Point) bool {
+	return gm.tiles[gm.GetIndex(p)].Transparent
+}
+
+// IsWall tests if the [Tile] at a [Point] in the [GameMap] is a type
+// of wall. If so, it returns true and if not it returns false.
+func (gm *GameMap) IsWall(p Point) bool {
+	if !gm.InBounds(p) {
+		return false
+	}
+	t := gm.tiles[gm.GetIndex(p)]
+
+	return (t == wallTL ||
+		t == wallTR ||
+		t == wallBR ||
+		t == wallBL ||
+		t == wallHoriz ||
+		t == wallVert ||
+		t == wallTRight ||
+		t == wallTDown ||
+		t == wallTLeft ||
+		t == wallTUp ||
+		t == wall4Way ||
+		t == wallCapUp ||
+		t == wallCapRight ||
+		t == wallCapDown ||
+		t == wallCapLeft)
 }
 
 // MapViewer exposes the methods needed to read the [GameMap] and prevents it
@@ -92,18 +110,14 @@ func (gm *GameMap) GetTileAt(p Point) Tile {
 	return *gm.tiles[gm.GetIndex(p)]
 }
 
-// Floor is a dummy to give us something to fill the map with.
-var floor = &Tile{Walkable: true,
-	Transparent: true,
-	DarkGraphic: &Graphic{Name: " ",
-		FG: color.NRGBA{R: 0, G: 0, B: 0, A: 0},
-		BG: color.NRGBA{R: 50, G: 50, B: 150, A: 255},
-	}}
-
-// Wall is a dummy to let us set some walls to verify we can't walk through
-// a non-walkable tile.
-var wall = &Tile{Walkable: false,
-	Transparent: false,
-	DarkGraphic: &Graphic{Name: " ",
-		FG: color.NRGBA{R: 0, G: 0, B: 0, A: 0},
-		BG: color.NRGBA{R: 0, G: 0, B: 100, A: 255}}}
+// RoomConfiguration stores the maximum number of rooms we will attempt to
+// create for a map, the minimum number of rooms we will accept, the minimum
+// and maximum width of a room, and the minimum and maximum height for a room.
+type RoomConfiguration struct {
+	RoomsMax       int
+	RoomsMin       int
+	RoomsWidthMin  int
+	RoomsWidthMax  int
+	RoomsHeightMin int
+	RoomsHeightMax int
+}

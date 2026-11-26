@@ -1,0 +1,216 @@
+{
+    "graphic": {
+        "file": "monochrome-transparent_packed.png",
+        "tileWidth": 16,
+        "tileHeight": 16,
+        "sprites": {
+            "player": {
+                "imageLoc": {"x": 25, "y": 0},
+                "color": {"R": 255, "G": 255, "B": 255, "A": 255},
+                "rotation": 0
+            },
+            "monster": {
+                "imageLoc": {"x": 28, "y": 6},
+                "color": {"R": 255, "G": 255, "B": 0, "A": 255},
+                "rotation": 0
+            },
+            "wallVert": {
+                "imageLoc": {"x": 8, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallHoriz": {
+                "imageLoc": {"x": 8, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0.5
+            },
+            "wallTL": {
+                "imageLoc": {"x": 9, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallTR": {
+                "imageLoc": {"x": 9, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0.5
+            },
+            "wallBL": {
+                "imageLoc": {"x": 9, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 1.5
+            },
+            "wallBR": {
+                "imageLoc": {"x": 9, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 1
+            },
+            "wallTRight": {
+                "imageLoc": {"x": 10, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallTDown": {
+                "imageLoc": {"x": 10, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0.5
+            },
+            "wallTLeft": {
+                "imageLoc": {"x": 10, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 1.0
+            },
+            "wallTUp": {
+                "imageLoc": {"x": 10, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 1.5
+            },
+            "wall4Way": {
+                "imageLoc": {"x": 11, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallCapUp": {
+                "imageLoc": {"x": 12, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallCapRight": {
+                "imageLoc": {"x": 12, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0.5
+            },
+            "wallCapDown": {
+                "imageLoc": {"x": 12, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 1.0
+            },
+            "wallCapLeft": {
+                "imageLoc": {"x": 12, "y": 4},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 1.5
+            },
+            "floor": {
+                "imageLoc": {"x": 16, "y": 0},
+                "color": {"R": 100, "G": 100, "B": 100, "A": 255},
+                "rotation": 0
+            },
+            "bedrock": {
+                "imageLoc": {"x": 8, "y": 5},
+                "color": {"R": 0, "G": 0, "B": 0, "A": 255},
+                "rotation": 0
+            },
+            "whiteTile": {
+                "imageLoc": {"x": 8, "y": 5},
+                "color": {"R": 255, "G": 255, "B": 255, "A": 255},
+                "rotation": 0
+            }
+        } 
+    },
+    "ascii": {
+        "file": "dejavu10x10_gs_tc_transparent.png",
+        "tileWidth": 10,
+        "tileHeight": 10,
+        "sprites": {
+            "player": {
+                "imageLoc": {"x": 0, "y": 1},
+                "color": {"R": 255, "G": 255, "B": 255, "A": 255},
+                "rotation": 0
+            },
+            "monster": {
+                "imageLoc": {"x": 6, "y": 4},
+                "color": {"R": 255, "G": 255, "B": 0, "A": 255},
+                "rotation": 0
+            },
+            "wallVert": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallHoriz": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallTL": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallTR": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallBL": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallBR": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallTUp": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallTDown": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallTLeft": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallTRight": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wall4Way": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallCapUp": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallCapDown": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallCapLeft": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "wallCapRight": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 50, "G": 50, "B": 50, "A": 255},
+                "rotation": 0
+            },
+            "floor": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 100, "G": 100, "B": 100, "A": 255},
+                "rotation": 0
+            },
+            "bedrock": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 0, "G": 0, "B": 0, "A": 255},
+                "rotation": 0
+            },
+            "whiteTile": {
+                "imageLoc": {"x": 25, "y": 2},
+                "color": {"R": 255, "G": 255, "B": 255, "A": 255},
+                "rotation": 0
+            }
+        }
+    }
+}

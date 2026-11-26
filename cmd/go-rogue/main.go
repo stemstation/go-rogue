@@ -1,14 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"image/color"
 	"log"
 
+	"github.com/FooWho/go-rogue/assets"
 	"github.com/FooWho/go-rogue/internal/engine"
 	"github.com/FooWho/go-rogue/internal/renderer"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -18,8 +18,8 @@ type GameRunner struct {
 	renderer  *renderer.Renderer
 }
 
-// This is a wrapper function that lets our [engine.Game] handle updates without
-// having to tie that directly to Ebitengine.
+// Update is a wrapper function that lets our [engine.Game] handle updates
+// without having to tie that directly to Ebitengine.
 func (g *GameRunner) Update() error {
 	err := g.gameState.Update()
 
@@ -30,14 +30,15 @@ func (g *GameRunner) Update() error {
 	return err
 }
 
-// Draw is a wrapper function that keeps our Renderer as separated from Ebitengine
-// as possible. I couldn't get it completely decoupled yet, though maybe in the
-// future. That will allow drop in replacements for other rendering.
+// Draw is a wrapper function that keeps our Renderer as separated from
+// Ebitengine as possible. This will allow drop in replacements for other
+// rendering in the future.
 func (g *GameRunner) Draw(screen *ebiten.Image) {
 	g.renderer.Draw(screen, g.gameState)
 }
 
-// Layout is a required method of Ebitengine's Game interface.
+// Layout is a wrapper function that keeps our Renderer separate from
+// the engine.
 func (g *GameRunner) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return g.renderer.Layout(outsideWidth, outsideHeight)
 }
@@ -45,57 +46,82 @@ func (g *GameRunner) Layout(outsideWidth, outsideHeight int) (int, int) {
 // Interface Guard
 var _ ebiten.Game = (*GameRunner)(nil)
 
-const (
-	gameCols   = 80
-	gameRows   = 50
-	tileWidth  = 10
-	tileHeight = 10
-	playerX    = (gameCols / 2)
-	playerY    = (gameRows / 2)
-)
-
 func main() {
+	configurationFile, err := assets.AssetsFS.ReadFile("configuration.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	var config ConfigurationFile
+	err = json.Unmarshal(configurationFile, &config)
+	if err != nil {
+		log.Fatal(err)
+	}
 	input := &EbitenInput{}
-	renderer, err :=
-		renderer.NewRenderer("dejavu10x10_gs_tc_transparent.png",
-			tileWidth,
-			tileHeight,
-			gameCols,
-			gameRows,
+
+	renderer, namesToIDs, err :=
+		renderer.NewRenderer(
+			config.ViewPortCols,
+			config.ViewPortRows,
+			config.Tileset,
 		)
 	if err != nil {
 		log.Fatal(err)
 	}
-	player := &engine.Entity{Loc: engine.Point{X: playerX, Y: playerY},
-		Name: "player",
-		Graphic: engine.Graphic{
-			Name: "@",
-			FG:   color.NRGBA{R: 255, G: 255, B: 255, A: 255},
-			BG:   color.NRGBA{R: 0, G: 0, B: 0, A: 0},
-		},
-		Behavior: &engine.PlayerControl{},
+	player := &engine.Entity{
+		Name:       "player",
+		SpriteName: "player",
+		SpriteID:   namesToIDs["player"],
+		Behavior:   &engine.PlayerControl{},
 	}
-	npc := &engine.Entity{Loc: engine.Point{X: gameCols/2 - 5, Y: gameRows / 2},
-		Name: "monster",
-		Graphic: engine.Graphic{
-			Name: "@",
-			FG:   color.NRGBA{R: 255, G: 255, B: 0, A: 255},
-			BG:   color.NRGBA{R: 0, G: 0, B: 0, A: 0},
-		},
-		Behavior: nil,
+	npc := &engine.Entity{
+		Name:       "monster",
+		SpriteName: "monster",
+		SpriteID:   namesToIDs["monster"],
+		Behavior:   nil,
 	}
 	npcs := []*engine.Entity{npc}
-	game, err := engine.NewGame(gameCols,
-		gameRows,
+	roomsConfig := engine.RoomConfiguration{
+		RoomsMax:       config.RoomsMax,
+		RoomsMin:       config.RoomsMin,
+		RoomsWidthMin:  config.RoomsWidthMin,
+		RoomsWidthMax:  config.RoomsWidthMax,
+		RoomsHeightMin: config.RoomsHeightMin,
+		RoomsHeightMax: config.RoomsHeightMax,
+	}
+	game, err := engine.NewGame(
+		config.ViewPortCols,
+		config.ViewPortRows,
 		player,
 		npcs,
-		input)
+		input,
+		roomsConfig,
+		namesToIDs,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
-	gameRunner := &GameRunner{gameState: game, renderer: renderer}
+	gameRunner := &GameRunner{
+		gameState: game,
+		renderer:  renderer,
+	}
 	err = ebiten.RunGame(gameRunner)
 	if err != nil && err != ebiten.Termination {
 		log.Fatal(err)
 	}
+}
+
+// ConfigurationFile holds which set of sprites/tiles we are using - currently
+// "ascii" or "graphic". It defines the maximum number of rooms we will attempt
+// to place when generating the dungeon, the minimum number of rooms we will
+// accept, and the minimum and maximum sizes for a room.
+type ConfigurationFile struct {
+	Tileset        string `json:"tileset"`
+	ViewPortCols   int    `json:"viewPortCols"`
+	ViewPortRows   int    `json:"viewPortRows"`
+	RoomsMax       int    `json:"roomsMax"`
+	RoomsMin       int    `json:"roomsMin"`
+	RoomsWidthMin  int    `json:"roomsWidthMin"`
+	RoomsWidthMax  int    `json:"roomsWidthMax"`
+	RoomsHeightMin int    `json:"roomsHeightMin"`
+	RoomsHeightMax int    `json:"roomsHeightMax"`
 }
